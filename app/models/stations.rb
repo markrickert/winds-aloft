@@ -293,7 +293,7 @@ class Stations
         name: "Columbus Metropolitan Airport",
         city: "Columbus",
         state: "Georgia",
-        elev: nil,
+        elev: 389,
       },
       {
         code: "CVG",
@@ -653,7 +653,7 @@ class Stations
         name: "Bowman Field Airport",
         city: "Louisville",
         state: "Kentucky",
-        elev: nil,
+        elev: 535,
       },
       {
         code: "LRD",
@@ -977,7 +977,7 @@ class Stations
         name: "Reno-Tahoe International Airport",
         city: "Reno",
         state: "Nevada",
-        elev: nil,
+        elev: 4413,
       },
       {
         code: "ROA",
@@ -1139,7 +1139,7 @@ class Stations
         name: "Tri-Cities Regional Airport",
         city: "Blountville",
         state: "Tennessee",
-        elev: nil,
+        elev: 1550,
       },
       {
         code: "TUL",
@@ -1148,7 +1148,7 @@ class Stations
         name: "Tulsa International Airport",
         city: "Tulsa",
         state: "Oklahoma",
-        elev: nil,
+        elev: 650,
       },
       {
         code: "TUS",
@@ -1193,7 +1193,7 @@ class Stations
         name: "Black Rock Airport",
         city: "Zuni",
         state: "New Mexico",
-        elev: nil,
+        elev: 6447,
       },
       # Airports unknown to pidgets.com
       # http://www.flightstats.com/go/Airport/airportDetails.do?airportCode=
