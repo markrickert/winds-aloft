@@ -55,7 +55,7 @@ class Winds
       # Only care about the temp
       opts[:temp] = data[4..-1].to_i
     else
-      opts[:bearing] = data[0,2].to_i
+      opts[:bearing] = data[0,2].concat("0").to_i
       opts[:speed] = data[2,2].to_i
       opts[:temp] = data[4..-1].to_i
 
