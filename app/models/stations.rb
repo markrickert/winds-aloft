@@ -1587,6 +1587,6 @@ class Stations
         state: "Florida",
         elev: 0,
       }
-    ]
+    ].map { |station| station.merge(state_abbrev: State.abbrev(station[:state])) }
   end
 end

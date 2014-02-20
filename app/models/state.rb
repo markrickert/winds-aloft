@@ -1,5 +1,7 @@
 class State
   def self.abbrev(full)
+    return full if full.nil?
+
     abbrev = NAMES.detect { |state| state.first.downcase == full.downcase }
     abbrev.nil? ? full : abbrev.last
   end
