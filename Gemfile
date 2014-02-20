@@ -10,6 +10,7 @@ gem 'redis'
 gem 'unicorn'
 gem 'awesome_print'
 gem 'sqlite3'
+gem 'pg'
 
 group :development do
   gem 'quiet_assets' #Gets the junk out of the console
