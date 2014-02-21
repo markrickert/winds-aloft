@@ -64,7 +64,7 @@ class Winds
         opts[:bearing] = opts[:bearing] - 50
         opts[:speed] = opts[:speed] + 100
       end
-      opts[:bearing] = opts[:bearing].concat("0").to_i
+      opts[:bearing] = opts[:bearing].to_s.concat("0").to_i
 
     end
 
