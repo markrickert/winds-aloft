@@ -45,7 +45,7 @@ class Winds
     opts = {
       bearing: 0,
       speed: 0,
-      temp: 0,
+      temp: nil,
       raw: data
     }
     if data.strip == ""
@@ -57,7 +57,7 @@ class Winds
     else
       opts[:bearing] = data[0,2].to_i
       opts[:speed] = data[2,2].to_i
-      opts[:temp] = data[4..-1].to_i
+      opts[:temp] = data[4..-1].to_i unless data.length == 4
 
       # Account for speeds over 100 knots
       if opts[:bearing] > 50
