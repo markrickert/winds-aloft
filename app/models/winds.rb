@@ -8,7 +8,7 @@ class Winds
   HEADER_INDICATOR = 'ft'
 
   def self.all
-    new.scrape_winds unless $redis.exists(REDIS_KEY)
+    new.scraper unless $redis.exists(REDIS_KEY)
     JSON.parse($redis.get(REDIS_KEY))
   end
 
@@ -16,7 +16,7 @@ class Winds
     all.keys
   end
 
-  def scrape_winds
+  def scraper
     winds_html = scrape_http('http://aviationweather.gov/products/nws/all')
     data = winds_html.xpath('//pre').first.content
 
@@ -32,8 +32,9 @@ class Winds
       next if code.downcase == HEADER_INDICATOR
 
       winds[code] = {}
+      winds[code][:raw] = station.join(' ')
       column_headers.each_with_index do |header, i|
-        next if header.downcase == HEADER_INDICATOR
+        next if header.downcase == HEADER_INDICATOR # Always skip the header
 
         winds[code][header] = parse_raw_data(station[i], header.to_i)
       end
@@ -48,7 +49,7 @@ class Winds
       temp: nil,
       raw: data
     }
-    if data.strip == ""
+    if data.strip == ''
       return opts
     elsif data[0,4] == '9900'
       # Winds are "light and variable"
@@ -64,7 +65,7 @@ class Winds
         opts[:bearing] = opts[:bearing] - 50
         opts[:speed] = opts[:speed] + 100
       end
-      opts[:bearing] = opts[:bearing].to_s.concat("0").to_i
+      opts[:bearing] = opts[:bearing].to_s.concat('0').to_i
 
     end
 
@@ -72,6 +73,7 @@ class Winds
     opts
   end
 
+  # Gets a front-padded array of the one line we're asking for.
   def line_a(line)
     total_count = column_headers.count
     line = line.split(' ')
@@ -84,12 +86,14 @@ class Winds
     line
   end
 
+  # Turns the body of the result into an array
   def to_a
     @a ||= @body.lines.to_a
   end
 
+  # Grabs the headers of all the columns
   def column_headers
-    @headers ||= to_a.find { |line| line.split(' ').first.downcase == HEADER_INDICATOR }.split(' ')
+    @column_headers ||= to_a.find { |line| line.split(' ').first.downcase == HEADER_INDICATOR }.split(' ')
   end
 
   def scrape_http(url)
