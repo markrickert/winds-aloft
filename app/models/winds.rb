@@ -44,8 +44,8 @@ class Winds
 
   def parse_raw_data(data, elevation)
     opts = {
-      bearing: 0,
-      speed: 0,
+      bearing: nil,
+      speed: nil,
       temp: nil,
       raw: data
     }
