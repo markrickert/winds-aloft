@@ -9,8 +9,6 @@ class Winds
   HEADER_INDICATOR = 'ft'
 
   def self.all
-    return new.scraper
-
     new.scraper unless $redis.exists(REDIS_KEY)
     JSON.parse($redis.get(REDIS_KEY))
   end
