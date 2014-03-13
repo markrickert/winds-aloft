@@ -8,12 +8,12 @@ gem 'rails-api'
 gem 'nokogiri'
 gem 'redis'
 gem 'unicorn'
-gem 'awesome_print'
 
 group :development do
   gem 'quiet_assets' #Gets the junk out of the console
   gem 'capistrano'
   gem 'pry'
+  gem 'awesome_print'
 end
 
 # To use ActiveModel has_secure_password
