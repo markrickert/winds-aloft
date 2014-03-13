@@ -5,9 +5,12 @@ class Winds
   require 'cgi'
 
   REDIS_KEY = 'winds'
+  VALID_KEY = 'valid'
   HEADER_INDICATOR = 'ft'
 
   def self.all
+    return new.scraper
+
     new.scraper unless $redis.exists(REDIS_KEY)
     JSON.parse($redis.get(REDIS_KEY))
   end
@@ -23,6 +26,10 @@ class Winds
     split = data.split("\n\n")
     @header = split.first
     @body = split.last
+
+    # Get dem times
+    header_data = parse_header_data
+    $redis.set(VALID_KEY, valid(header_data[:valid]))
 
     winds = {}
     to_a.each do |station|
@@ -40,6 +47,11 @@ class Winds
       end
     end
     $redis.set(REDIS_KEY, winds.to_json)
+
+    usage = use(header_data[:use])
+    expire = usage.end.to_i - Time.now.utc.to_i
+
+    $redis.expire(REDIS_KEY, expire)
   end
 
   def parse_raw_data(data, elevation)
@@ -49,6 +61,7 @@ class Winds
       temp: nil,
       raw: data
     }
+
     if data.strip == ''
       return opts
     elsif data[0,4] == '9900'
@@ -61,15 +74,35 @@ class Winds
       opts[:temp] = data[4..-1].to_i unless data.length == 4
 
       # Account for speeds over 100 knots
-      if opts[:bearing] > 50
+      if opts[:bearing] > 36
         opts[:bearing] = opts[:bearing] - 50
         opts[:speed] = opts[:speed] + 100
       end
-      opts[:bearing] = opts[:bearing].to_s.concat('0').to_i
 
+      # Account for speeds over 200 knots
+      opts[:speed] = "200+" if opts[:speed] == 199
+
+      # Make sure the bearing is 3 digits
+      opts[:bearing] = opts[:bearing].to_s.concat('0').to_i
     end
 
-    opts[:temp] = 0 - opts[:temp] if elevation > 24000
+    opts[:temp] = -opts[:temp] if elevation > 24000
+    opts
+  end
+
+  def parse_header_data
+    data = @header.split("\n")
+
+    opts = {}
+    opts[:based_on] = data.find { |d| d.downcase.strip.start_with?('data based on') }.strip
+
+    valid = data.find { |d| d.downcase.strip.start_with?('valid') }
+                .split(/(\s\s)|\./)
+                .collect(&:strip)
+                .reject(&:empty?)
+
+    opts[:valid] = valid.find { |d| d.downcase.start_with?('valid') }.strip
+    opts[:use]   = valid.find { |d| d.downcase.start_with?('for use') }.strip
     opts
   end
 
@@ -84,6 +117,18 @@ class Winds
       end
     end
     line
+  end
+
+  def valid(string)
+    Time.parse(string.split(' ').last.scan(/.{1,2}/).join(':'))
+  end
+
+  def use(string)
+    parts = string.split('-')
+    from = Time.parse(parts.first.delete('Z').scan(/.{1,2}/).join(':').concat(' Z'))
+    till = Time.parse(parts.last.delete('Z').scan(/.{1,2}/).join(':').concat(' Z'))
+
+    (from..till)
   end
 
   # Turns the body of the result into an array
