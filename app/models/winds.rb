@@ -31,7 +31,6 @@ class Winds
 
     # Get dem times
     header_data = parse_header_data
-    ap header_data
     $redis.set(DATA_KEY, header_data.to_json)
 
     winds = {}
