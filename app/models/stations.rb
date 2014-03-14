@@ -1,5 +1,4 @@
 class Stations
-
   def self.unknown
     unk = []
     Winds.airport_codes.each do |code|

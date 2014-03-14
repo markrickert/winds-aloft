@@ -5,12 +5,16 @@ class Winds
   require 'cgi'
 
   REDIS_KEY = 'winds'
-  VALID_KEY = 'valid'
+  DATA_KEY  = 'data'
   HEADER_INDICATOR = 'ft'
 
   def self.all
     new.scraper unless $redis.exists(REDIS_KEY)
-    JSON.parse($redis.get(REDIS_KEY))
+
+    {
+      data: JSON.parse($redis.get(DATA_KEY)),
+      winds: JSON.parse($redis.get(REDIS_KEY))
+    }
   end
 
   def self.airport_codes
@@ -27,7 +31,8 @@ class Winds
 
     # Get dem times
     header_data = parse_header_data
-    $redis.set(VALID_KEY, valid(header_data[:valid]))
+    ap header_data
+    $redis.set(DATA_KEY, header_data.to_json)
 
     winds = {}
     to_a.each do |station|
@@ -101,6 +106,7 @@ class Winds
 
     opts[:valid] = valid.find { |d| d.downcase.start_with?('valid') }.strip
     opts[:use]   = valid.find { |d| d.downcase.start_with?('for use') }.strip
+    opts[:expires] = Time.zone.parse(opts[:valid].split(' ').last.scan(/.{1,2}/).join(':'))
     opts
   end
 
@@ -115,10 +121,6 @@ class Winds
       end
     end
     line
-  end
-
-  def valid(string)
-    Time.parse(string.split(' ').last.scan(/.{1,2}/).join(':'))
   end
 
   def use(string)
