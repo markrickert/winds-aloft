@@ -54,6 +54,8 @@ class Winds
     expire = usage.end.to_i - Time.now.utc.to_i
 
     $redis.expire(REDIS_KEY, expire)
+
+    true
   end
 
   def parse_raw_data(data, elevation)
