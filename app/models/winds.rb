@@ -107,7 +107,7 @@ class Winds
 
     opts[:valid] = valid.find { |d| d.downcase.start_with?('valid') }.strip
     opts[:use]   = valid.find { |d| d.downcase.start_with?('for use') }.strip
-    opts[:expires] = Time.zone.parse(opts[:valid].split(' ').last.scan(/.{1,2}/).join(':'))
+    opts[:expires] = Time.zone.parse(opts[:valid].split(' ').last.scan(/.{1,2}/)[1..-1].join(':'))
     opts
   end
 
