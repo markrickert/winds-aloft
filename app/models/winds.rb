@@ -9,12 +9,14 @@ class Winds
   HEADER_INDICATOR = 'ft'
 
   def self.all
-    new.scraper if $redis.get(REDIS_KEY).nil?
-
-    {
-      data: JSON.parse($redis.get(DATA_KEY)),
-      winds: JSON.parse($redis.get(REDIS_KEY))
-    }
+    if $redis.get(REDIS_KEY).nil?
+      new.scraper
+    else
+      {
+        data: JSON.parse($redis.get(DATA_KEY)),
+        winds: JSON.parse($redis.get(REDIS_KEY))
+      }
+    end
   end
 
   def self.airport_codes
@@ -55,7 +57,10 @@ class Winds
 
     $redis.expire(REDIS_KEY, expire)
 
-    true
+    {
+      data: header_data,
+      winds: winds
+    }
   end
 
   def parse_raw_data(data, elevation)
