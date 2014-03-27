@@ -58,6 +58,7 @@ class Winds
     $redis.expire(REDIS_KEY, expire)
 
     {
+      scraped: true,
       data: header_data,
       winds: winds
     }
