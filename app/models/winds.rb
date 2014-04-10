@@ -77,7 +77,8 @@ class Winds
     elsif data[0,4] == '9900'
       # Winds are "light and variable"
       # Only care about the temp
-      opts[:temp] = data[4..-1].to_i
+      temp = data[4..-1]
+      opts[:temp] = (temp == "") ? nil : temp.to_i
     else
       opts[:bearing] = data[0,2].to_i
       opts[:speed] = data[2,2].to_i
