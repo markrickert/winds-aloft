@@ -53,7 +53,12 @@ class Winds
 
         next if code.downcase == HEADER_INDICATOR
 
-        winds[code] = {}
+        # This is needed to make v1.0.0 of the app not crash
+        winds[code] = {
+          '30000' => parse_raw_data(nil, nil),
+          '34000' => parse_raw_data(nil, nil),
+          '39000' => parse_raw_data(nil, nil)
+        }
         winds[code][:raw] = station.join(' ')
 
         height_headers.each_with_index do |header, i|
@@ -95,6 +100,7 @@ class Winds
       temp: nil,
       raw: data
     }
+    return opts if data.nil? && elevation.nil?
 
     if data.strip == ''
       return opts
