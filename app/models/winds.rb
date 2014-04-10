@@ -24,43 +24,67 @@ class Winds
   end
 
   def scraper
-    winds_html = scrape_http('http://aviationweather.gov/products/nws/all')
-    data = winds_html.xpath('//pre').first.content
 
-    split = data.split("\n\n")
-    @header = split.first
-    @body = split.last
+    urls = [
+      'http://aviationweather.gov/products/nws/all',
+      'http://aviationweather.gov/products/nws/hawaii',
+      'http://aviationweather.gov/products/nws/alaska'
+    ]
 
-    # Get dem times
-    header_data = parse_header_data
-    $redis.set(DATA_KEY, header_data.to_json)
+    header_data = []
+    winds_data = []
 
-    winds = {}
-    to_a.each do |station|
-      station = line_a(station)
-      code = station.first
+    urls.each do |scrape_url|
+      puts "Scraping URL: #{scrape_url}"
 
-      next if code.downcase == HEADER_INDICATOR
+      winds_html = scrape_http(scrape_url)
+      data = winds_html.xpath('//pre').first.content
+      split = data.split("\n\n")
+      body_lines = split.last.lines
 
-      winds[code] = {}
-      winds[code][:raw] = station.join(' ')
-      column_headers.each_with_index do |header, i|
-        next if header.downcase == HEADER_INDICATOR # Always skip the header
+      # Parse header data
+      header_data << parse_header_data(split.first)
+      height_headers = column_headers(body_lines)
 
-        winds[code][header] = parse_raw_data(station[i], header.to_i)
+      winds = {}
+      body_lines.each do |station|
+        station = line_a(station, height_headers)
+        code = station.first
+
+        next if code.downcase == HEADER_INDICATOR
+
+        winds[code] = {}
+        winds[code][:raw] = station.join(' ')
+
+        height_headers.each_with_index do |header, i|
+          next if header.downcase == HEADER_INDICATOR # Always skip the header
+
+          winds[code][header] = parse_raw_data(station[i], header.to_i)
+        end
       end
+      winds_data << winds
     end
-    $redis.set(REDIS_KEY, winds.to_json)
 
-    usage = use(header_data[:use])
+    winds_merged = {}
+    winds_data.each do |ww|
+      winds_merged =  winds_merged.merge(ww)
+    end
+
+    $redis.del(REDIS_KEY)
+    $redis.set(REDIS_KEY, winds_merged.to_json)
+
+    $redis.del(DATA_KEY)
+    $redis.set(DATA_KEY, header_data.first.to_json)
+
+    usage = use(header_data.first[:use])
     expire = usage.end.to_i - Time.now.utc.to_i
 
     $redis.expire(REDIS_KEY, expire)
 
     {
       scraped: true,
-      data: header_data,
-      winds: winds
+      data: header_data.first,
+      winds: winds_merged
     }
   end
 
@@ -101,8 +125,8 @@ class Winds
     opts
   end
 
-  def parse_header_data
-    data = @header.split("\n")
+  def parse_header_data(header)
+    data = header.split("\n")
 
     opts = {}
     opts[:based_on] = data.find { |d| d.downcase.strip.start_with?('data based on') }.strip
@@ -119,8 +143,8 @@ class Winds
   end
 
   # Gets a front-padded array of the one line we're asking for.
-  def line_a(line)
-    total_count = column_headers.count
+  def line_a(line, height_headers)
+    total_count = height_headers.count
     line = line.split(' ')
 
     if line.count != total_count
@@ -139,14 +163,9 @@ class Winds
     (from..till)
   end
 
-  # Turns the body of the result into an array
-  def to_a
-    @a ||= @body.lines.to_a
-  end
-
   # Grabs the headers of all the columns
-  def column_headers
-    @column_headers ||= to_a.find { |line| line.split(' ').first.downcase == HEADER_INDICATOR }.split(' ')
+  def column_headers(data)
+    data.find { |line| line.split(' ').first.downcase == HEADER_INDICATOR }.split(' ')
   end
 
   def scrape_http(url)
