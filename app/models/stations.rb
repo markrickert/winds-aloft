@@ -1585,6 +1585,62 @@ class Stations
         city: "West Tampa",
         state: "Florida",
         elev: 0,
+      },
+
+      # Hawaii
+      {
+        code: "HNL",
+        lat: 21.3358,
+        lon: -157.919,
+        name: "Honolulu International Airport",
+        city: "Honolulu",
+        state: "Hawaii",
+        elev: 13
+      },
+      {
+        code: "ITO",
+        lat: 19.7126,
+        lon: -155.042,
+        name: "Hilo International Airport",
+        city: "Hilo",
+        state: "Hawaii",
+        elev: 38
+      },
+      {
+        code: "KOA",
+        lat: 19.7334,
+        lon: -156.039,
+        name: "Kailua-Kona International Airport",
+        city: "Kailua Kona",
+        state: "Hawaii",
+        elev: 43
+      },
+      {
+        code: "LIH",
+        lat: 21.9782,
+        lon: -159.351,
+        name: "Lihue Airport",
+        city: "Lihue",
+        state: "Hawaii",
+        elev: 149
+      },
+      {
+        code: "LNY",
+        lat: 20.7909,
+        lon: -156.951,
+        name: "Lanai Airport",
+        city: "Lanai City",
+        state: "Hawaii",
+        elev: 1308
+      },
+      {
+        code: "OGG",
+        lat: 20.8926,
+        lon: -156.441,
+        name: "Kahului Airport",
+        city: "Kahului",
+        state: "Hawaii",
+        elev: 53
       }
     ].map { |station| station.merge(state_abbrev: State.abbrev(station[:state])) }
   end
