@@ -102,7 +102,7 @@ class Winds
       # Winds are "light and variable"
       # Only care about the temp
       temp = data[4..-1]
-      opts[:temp] = (temp == "") ? nil : temp.to_i
+      opts[:temp] = temp.to_i unless temp == ""
     else
       opts[:bearing] = data[0,2].to_i
       opts[:speed] = data[2,2].to_i
