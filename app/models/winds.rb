@@ -20,7 +20,7 @@ class Winds
   end
 
   def self.airport_codes
-    all.keys
+    all[:winds].keys
   end
 
   def scraper
