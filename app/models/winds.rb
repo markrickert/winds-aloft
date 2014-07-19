@@ -28,7 +28,17 @@ class Winds
     urls = [
       'http://aviationweather.gov/products/nws/all',
       'http://aviationweather.gov/products/nws/hawaii',
-      'http://aviationweather.gov/products/nws/alaska'
+      'http://aviationweather.gov/products/nws/alaska',
+
+      'http://aviationweather.gov/windtemp/data?region=bos&layout=off',
+      'http://aviationweather.gov/windtemp/data?region=mia&layout=off',
+      'http://aviationweather.gov/windtemp/data?region=chi&layout=off',
+      'http://aviationweather.gov/windtemp/data?region=dfw&layout=off',
+      'http://aviationweather.gov/windtemp/data?region=slc&layout=off',
+      'http://aviationweather.gov/windtemp/data?region=sfo&layout=off',
+      'http://aviationweather.gov/windtemp/data?region=alaska&layout=off',
+      'http://aviationweather.gov/windtemp/data?region=hawaii&layout=off',
+      # 'http://aviationweather.gov/windtemp/data?region=other_pac&layout=off'
     ]
 
     header_data = []
