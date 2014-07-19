@@ -1471,8 +1471,8 @@ class Stations
       },
       {
         code: "EMI",
-        lat: 39.4999968731,
-        lon: -76.9831823074,
+        lat: 39.495009,
+        lon: -76.978574,
         name: "Westminster, MD Weather Station",
         city: "Westminster",
         state: "Maryland",
