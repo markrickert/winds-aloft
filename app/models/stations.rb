@@ -1318,12 +1318,12 @@ class Stations
       },
       {
         code: "EMI",
-        lat: -1.65,
-        lon: 149.98334,
-        name: "Emirau Airport",
-        city: "Emirau",
-        state: "Papua New Guinea",
-        elev: 2,
+        lat: 39.4999968731,
+        lon: -76.9831823074,
+        name: "Westminster, MD Weather Station",
+        city: "Westminster",
+        state: "Maryland",
+        elev: 499,
       },
       {
         code: "FOT",
